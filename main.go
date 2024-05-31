@@ -20,6 +20,7 @@ func main() {
 
 	r.HandleFunc("/addtask", handlers.AddTask).Methods("POST")
 	r.HandleFunc("/delete/{id}", handlers.DeleteTask).Methods("DELETE")
+	r.HandleFunc("/search",handlers.SearchTask).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

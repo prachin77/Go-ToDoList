@@ -142,3 +142,60 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func SearchTask(w http.ResponseWriter, r *http.Request) {
+	searchValue := r.PostFormValue("search")
+	fmt.Println("search value : ", searchValue)
+	if searchValue == "" {
+		fmt.Println("search value is empty")
+		allTaskList, err := GetAllTasks(w, r)
+		if err != nil {
+			http.Error(w, "Failed to retrieve all tasks", http.StatusInternalServerError)
+			fmt.Println("Error retrieving all tasks:", err)
+			return
+		}
+		fmt.Println("all tasks : ",allTaskList)
+		tmpl := template.Must(template.ParseFiles("./templates/todocompo.html"))
+        for _, task := range allTaskList {
+            tmpl.Execute(w, task) // Pass each task to the template
+        }
+		return
+	}
+
+	// Define a context for the operation
+	ctx := context.TODO()
+
+	// Define options to customize the query
+	findOptions := options.Find()
+
+	// Define a filter for the search query
+	filter := bson.M{"taskvalue": primitive.Regex{Pattern: searchValue, Options: "i"}}
+
+	// Find documents in the collection that match the filter
+	cursor, err := collection.Find(ctx, filter, findOptions)
+	if err != nil {
+		http.Error(w, "Failed to search tasks", http.StatusInternalServerError)
+		fmt.Println("Error searching tasks:", err)
+		return
+	}
+	defer cursor.Close(ctx)
+
+	// Create a slice to hold the search results
+	// var tasks []Task
+	var tasks Task
+
+	// Iterate over the cursor and decode each document into a Task
+	for cursor.Next(ctx) {
+		var task Task
+		if err := cursor.Decode(&task); err != nil {
+			fmt.Println("Error decoding task:", err)
+			continue
+		}
+		tasks = task
+		break
+	}
+	fmt.Println("tasks from search function : ", tasks)
+
+	tmpl := template.Must(template.ParseFiles("./templates/todocompo.html"))
+	tmpl.Execute(w, tasks)
+}

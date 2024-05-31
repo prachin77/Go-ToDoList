@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 
-
 <div id="main-todo" class="max-w-md w-full bg-white shadow-md rounded-md p-4 ">
     <h1 class="text-lg font-semibold">Todo List</h1>
     <ul>
@@ -26,32 +25,36 @@
         >
     </form>
 
-
-    <!-- Todo List Header -->
+    <!-- hx-trigger="input changed delay:1s, search"  -->
     <div class="flex justify-between items-center mb-4">
-        <input type="text" 
-               placeholder="Search..." 
-               class="px-2 py-1 border rounded-md outline-none border border-black"
-               hx-get="/search"
-               hx-trigger="input changed delay:1s, search" 
-        >
+        <!-- <form hx-post ="/search"
+              hx-target="#taketask"
+              hx-swap="innerHTML"
+        >  -->
+            <input type="text" 
+                id="search" 
+                hx-post ="/search"
+                hx-target="#taketask"
+                hx-swap="innerHTML"
+                hx-trigger="input delay:500ms"
+                autocomplete="off"
+                name="search" 
+                placeholder="Search..." 
+                class="px-2 py-1 border rounded-md outline-none border border-black"
+            >
+            <!-- <input type="submit" value="Search"> -->
+        <!-- </form> -->
     </div>
+
     <!-- Todo List -->
+   
     <ul class="flex flex-col" 
         id="taketask"
     >
-    {{ range .}}
-        {{ template "todocompo.html" . }}
-    {{ end }}
+        {{ range .}}
+            {{ template "todocompo.html" . }}
+        {{ end }}
     </ul>
-    <script>
-        
-        function clearInput() {
-            let inputValue = document.getElementById("addtask")
-
-            inputValue.value = ""
-        }
-    </script>
 </div>
 
 
