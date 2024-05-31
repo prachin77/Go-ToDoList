@@ -1,8 +1,8 @@
-# GO TODO LIST
+### run project 
+```bash go run . ```
 
-## Tech Stack
+### build project
+```bash go build ```
 
-### 1. Golang
-### 2. Mongodb
-
-
+### initialize project
+````bash go mod init ```
