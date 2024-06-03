@@ -10,9 +10,11 @@
     </div>
     <!-- Delete Button -->
     <div>
+        <!-- hx-target="#currtask" -->
         <button class="text-white bg-black p-2 border rounded hover:text-red-700 focus:outline-none" 
                 hx-trigger="click"
-                hx-target="#currtask"
+                hx-get="/update/{{.ID.Hex}}"
+                hx-target="#task-{{.ID.Hex}}"
                 hx-swap="outerHTML"
         >
             update

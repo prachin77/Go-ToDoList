@@ -5,4 +5,4 @@
 ```bash go build ```
 
 ### initialize project
-````bash go mod init ```
+```bash go mod init ```

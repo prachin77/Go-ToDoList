@@ -199,3 +199,57 @@ func SearchTask(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("./templates/todocompo.html"))
 	tmpl.Execute(w, tasks)
 }
+
+func UpdateTask(w http.ResponseWriter, r *http.Request){
+	// Extract task ID from request URL
+	taskId := mux.Vars(r)["id"]
+	fmt.Println("task id from get update : ", taskId)
+	tmpl := template.Must(template.ParseFiles("./templates/updateinputbox.html"))
+	// tmpl.Execute(w,nil)
+	tmpl.Execute(w,taskId)
+}
+
+func UpdatePost(w http.ResponseWriter, r *http.Request){
+    // Extract task ID from request URL
+    taskId := mux.Vars(r)["id"]
+    newUpdateValue := r.PostFormValue("newupdatevalue")
+    fmt.Println("task id from post update : ", taskId)
+    fmt.Println("new update value : ", newUpdateValue)
+
+    // Convert task ID string to ObjectID
+    objId, err := primitive.ObjectIDFromHex(taskId)
+    if err != nil {
+        log.Fatal(err)
+        return
+    }
+
+    // Define a filter to find the task by ID
+    filter := bson.M{"_id": objId}
+
+    // Define an update operation to set the new task value and date
+    update := bson.M{
+        "$set": bson.M{
+            "taskvalue": newUpdateValue,
+            "taskdate":  time.Now().Format("2006-01-02"),
+        },
+    }
+
+    // Perform the update operation
+    _, err = collection.UpdateOne(context.TODO(), filter, update)
+    if err != nil {
+        log.Fatal(err)
+        return
+    }
+
+    // Fetch the updated task from the database
+    var updatedTask Task
+    err = collection.FindOne(context.TODO(), filter).Decode(&updatedTask)
+    if err != nil {
+        log.Fatal(err)
+        return
+    }
+
+    // Render the template with the updated task
+    tmpl := template.Must(template.ParseFiles("./templates/todocompo.html"))
+    tmpl.Execute(w, updatedTask)
+}
